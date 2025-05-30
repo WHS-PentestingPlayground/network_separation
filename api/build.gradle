@@ -1,0 +1,66 @@
+plugins {
+	id 'java'
+	id 'war' // JSP 지원을 위한 WAR 배포
+	id 'org.springframework.boot' version '3.3.11'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// ✅ Spring MVC (JSP 포함)
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// ✅ JSP 컴파일 지원 (Jasper + JSP API)
+	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:10.1.40'
+	runtimeOnly 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.1.1'
+
+	// ✅ JSTL (Jakarta EE 10 기준)
+	implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+	runtimeOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+
+	// ✅ Servlet API
+	compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'      // 컴파일용 (IDE 인식 오류 방지)
+	providedRuntime 'jakarta.servlet:jakarta.servlet-api:6.0.0'  // 톰캣 제공용
+
+	// ✅ Spring JDBC (DB 연결)
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'com.h2database:h2' // 테스트용 H2 DB
+
+	// ✅ JSON 파싱용 (파일 목록 조회 시 사용)
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
+
+	// ✅ Lombok (DTO 편의)
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// ✅ 테스트
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// ✅ 톰캣은 WAR 배포 시 provided
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+}
+
+bootJar {
+	enabled = false
+}
+
+bootWar {
+	enabled = true
+	archiveFileName = 'app.war'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
